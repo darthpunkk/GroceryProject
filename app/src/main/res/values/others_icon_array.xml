@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="others_icon_array_items">
+        <item>@drawable/ic_lock</item>
+        <item>@drawable/ic_favorite</item>
+        <item>@drawable/ic_star_border</item>
+        <item>@drawable/ic_contact_phone</item>
+        <item>@drawable/ic_visibility</item>
+    </integer-array>
+</resources>

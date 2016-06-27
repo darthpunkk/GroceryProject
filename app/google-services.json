@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "955100853253",
+    "project_id": "groceryproject-7dca7"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:955100853253:android:a64dbeb9fbfe03f9",
+        "android_client_info": {
+          "package_name": "com.example.android.groceryproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWjciEAsKWSTriHaTfLWz8O4ebLLD6TEk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

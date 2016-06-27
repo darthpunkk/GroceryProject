@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?android:selectableItemBackground"
+    android:padding="8dp">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/product_list_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:adjustViewBounds="true"
+
+
+            />
+
+        <ProgressBar
+            android:id="@+id/network_list_image_progressbar"
+            style="?android:attr/progressBarStyleSmallInverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_horizontal"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/product_list_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@+id/relativeLayout"
+        android:layout_toRightOf="@+id/relativeLayout"
+        android:text="Samsung galaxy s7"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/product_list_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rs.10,000"
+        android:textColor="@color/red"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:layout_above="@+id/seller_count"
+        android:layout_alignLeft="@+id/product_list_name"
+        android:layout_alignStart="@+id/product_list_name" />
+
+    <TextView
+        android:id="@+id/seller_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/relativeLayout"
+        android:layout_alignLeft="@+id/product_list_price"
+        android:layout_alignStart="@+id/product_list_price"
+        android:text="At 8 sellers"
+        android:textSize="14sp" />
+
+    <com.github.ivbaranov.mfb.MaterialFavoriteButton
+        android:id="@+id/custom_favorite_button"
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        app:mfb_animate_favorite="true"
+        app:mfb_animate_unfavorite="true"
+        app:mfb_bounce_duration="600"
+        app:mfb_favorite_image="@drawable/redheart"
+        app:mfb_not_favorite_image="@drawable/greyheart"
+        app:mfb_rotation_duration="500"
+
+
+
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
+</RelativeLayout>
