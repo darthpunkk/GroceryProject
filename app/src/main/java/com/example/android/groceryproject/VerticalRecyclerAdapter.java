@@ -8,7 +8,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,8 +21,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -27,7 +34,6 @@ public class VerticalRecyclerAdapter extends RecyclerView.Adapter<VerticalRecycl
 
     ArrayList<Product> products;
     private Context mContext;
-    ImageLoader imageLoader;
     private clickListenerInterface listener;
 
 
@@ -67,29 +73,40 @@ public class VerticalRecyclerAdapter extends RecyclerView.Adapter<VerticalRecycl
     public void onBindViewHolder(final ProductListViewHolder holder, final int position) {
 
 
-        imageLoader = SingletonRequestQueue.getInstance(mContext).getImageLoader();
-        String URL = products.get(position).getProductImageUrl();
-        holder.progressBar.setVisibility(View.VISIBLE);
-        /* to hide the progress bar after image response */
-
-        imageLoader.get(URL, new ImageLoader.ImageListener() {
-            @Override
-            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                if (response != null) {
-                    Bitmap bitmap = response.getBitmap();
-                    if (bitmap != null) {
-                        holder.progressBar.setVisibility(View.GONE);
-                    }
-                }
-            }
-            @Override
-            public void onErrorResponse(VolleyError error) {}
-        });
-        holder.itemImage.setImageUrl(URL, imageLoader);
+        Picasso.with(mContext).load(products.get(position).getProductImageUrl()).into(holder.itemImage);
         holder.itemName.setText(products.get(position).getProductName());
-        holder.itemPrice.setText("₹ "+products.get(position).getProductPrice());
+        //
         holder.itemSellerCount.setText(products.get(position).getSellerCount());
         holder.favoriteButton.setFavorite(products.get(position).isitFavorite(),false);
+        final ArrayList<String> arrayList = new ArrayList<>(products.get(position).getProductQuantity().values());
+        final ArrayList<Integer> arrayList1 = new ArrayList<>(products.get(position).getProductQuantity().keySet());
+
+        if(arrayList.size()>1) {
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext,R.layout.quantity_textview, arrayList);
+            products.get(position).setProductPrice(arrayList1.get(0));
+            holder.itemPrice.setText("₹ " + arrayList1.get(0));
+            holder.PriceQuantitySpinner.setAdapter(adapter);
+            holder.PriceQuantitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                    products.get(position).setProductPrice(arrayList1.get(pos));
+                    holder.itemPrice.setText("₹ " + arrayList1.get(pos));
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+        }
+        else {
+            holder.relativeLayout.setVisibility(View.INVISIBLE);
+            holder.itemQuantity.setVisibility(View.VISIBLE);
+            holder.itemQuantity.setText(arrayList.get(0));
+            products.get(position).setProductPrice(arrayList1.get(0));
+            holder.itemPrice.setText("₹ "+arrayList1.get(0));
+        }
 
     }
 
@@ -103,22 +120,24 @@ public class VerticalRecyclerAdapter extends RecyclerView.Adapter<VerticalRecycl
 
     public class ProductListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        NetworkImageView itemImage;
+        ImageView itemImage;
         TextView itemSellerCount;
         TextView itemName;
-        TextView itemPrice;
-        ProgressBar progressBar;
+        TextView itemPrice,itemQuantity;
         MaterialFavoriteButton favoriteButton;
-
+        Spinner PriceQuantitySpinner;
+        RelativeLayout relativeLayout;
 
         public ProductListViewHolder(View itemView) {
             super(itemView);
-            itemImage = (NetworkImageView) itemView.findViewById(R.id.product_list_image);
+            itemImage = (ImageView) itemView.findViewById(R.id.product_list_image);
             itemSellerCount = (TextView) itemView.findViewById(R.id.seller_count);
             itemName = (TextView) itemView.findViewById(R.id.product_list_name);
+            PriceQuantitySpinner = (Spinner) itemView.findViewById(R.id.price_quantity_spinner);
+            itemQuantity = (TextView) itemView.findViewById(R.id.product_quantity);
             itemPrice = (TextView) itemView.findViewById(R.id.product_list_price);
-            progressBar = (ProgressBar)itemView.findViewById(R.id.network_list_image_progressbar);
             favoriteButton = (MaterialFavoriteButton)itemView.findViewById(R.id.custom_favorite_button);
+            relativeLayout = (RelativeLayout)itemView.findViewById(R.id.spinner_layout);
             favoriteButton.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }

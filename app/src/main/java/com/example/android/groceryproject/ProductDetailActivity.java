@@ -1,30 +1,24 @@
 package com.example.android.groceryproject;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -36,101 +30,95 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProductDetailActivity extends BaseActivity{
+
+public class ProductDetailActivity extends BaseActivity {
+
+    private static final String JSON_PRODUCT_REQUEST_URL = Constants.getInstance().ip + "description.json";
+    private static final String JSON_SELLER_REQUEST_URL = Constants.getInstance().ip + "seller.json";
 
     Toolbar mToolbar;
-    private String Product;
     ViewPager viewPager;
     ViewPagerAdapter adapter;
-    LinearLayout pagerIndicator;
+
     ProgressBar progressBar;
     NestedScrollView nestedScrollView;
     ArrayList<String> specsName, specsDescription, ImageArrayList;
-    RecyclerView specsRecyclerView,sellerRecyclerView;
-    private static final String JSON_PRODUCT_REQUEST_URL = "http://14.142.72.13/mandi/description.json";
+    RecyclerView specsRecyclerView, sellerRecyclerView;
     SpecsRecyclerAdapter specsRecyclerAdapter;
     SellerRecyclerAdapter sellerRecyclerAdapter;
-    LinearLayoutManager specsLayoutManager,sellerLayoutManager;
+    LinearLayoutManager specsLayoutManager, sellerLayoutManager;
     ArrayList<Product> ProductArrayObject;
     ArrayList<Seller> SellerArrayObject;
     TextView ProductName;
     MaterialFavoriteButton favoriteButton;
-    int count =0;
-    static int ResponseCount = 0;
-
+    private String productName;
+    private int mLongAnimationDuration;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        Intent intent = getIntent();
+        productName = intent.getStringExtra("product");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
+
         mToolbar = (Toolbar) findViewById(R.id.product_detail_toolbar);
-        // viewPager = (ViewPager) findViewById(R.id.pager);
-
-
+        mLongAnimationDuration = getResources().getInteger(android.R.integer.config_longAnimTime);
         ProductName = (TextView) findViewById(R.id.product_detail_name);
         favoriteButton = (MaterialFavoriteButton) findViewById(R.id.product_detail_favorite_button);
         viewPager = (ViewPager) findViewById(R.id.pager);
-        pagerIndicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
-
         nestedScrollView = (NestedScrollView) findViewById(R.id.product_detail_scrollview);
-        progressBar = (ProgressBar)findViewById(R.id.product_detail_progressbar);
+        progressBar = (ProgressBar) findViewById(R.id.product_detail_progressbar);
+        specsRecyclerView = (RecyclerView) findViewById(R.id.specs_view);
+        sellerRecyclerView = (RecyclerView) findViewById(R.id.seller_view);
+
+
+       /* final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
+                findViewById(R.id.collapse_toolbar);
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appBarLayout);
+
+
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = false;
+            int scrollRange;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                scrollRange = appBarLayout.getTotalScrollRange();
+                if (scrollRange + verticalOffset == 0) {
+                    collapsingToolbarLayout.setTitle("Product Details");
+                    isShow = true;
+                } else if(isShow) {
+                    collapsingToolbarLayout.setTitle("");
+                    isShow = false;
+                }
+            }
+        });*/
 
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Product details");
+        getSupportActionBar().setTitle(null);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-        Product = intent.getStringExtra("product");
+        SellerArrayObject = new ArrayList<>();
 
-        getJsonValue(Product);
+        getJsonValue(productName);
+        setSeller(productName);
 
         adapter = new ViewPagerAdapter(ImageArrayList, this);
 
-        Field mScroller;
-
-        try {
-            mScroller = ViewPager.class.getDeclaredField("mScroller");
-            mScroller.setAccessible(true);
-            FixedSpeedScroller scroller = new FixedSpeedScroller(viewPager.getContext());
-            mScroller.set(viewPager, scroller);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
 
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(1,false);
 
-
-        final Handler handler = new Handler();
-
-       /* handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                if(count==adapter.getCount()) {
-                    count = 0;
-                }
-                viewPager.setCurrentItem(count++, true);
-                handler.postDelayed(this, 5000);
-
-            }
-        },2000);*/
 
         specsRecyclerAdapter = new SpecsRecyclerAdapter(specsName, specsDescription, this);
-        sellerRecyclerAdapter = new SellerRecyclerAdapter(SellerArrayObject,this);
+        sellerRecyclerAdapter = new SellerRecyclerAdapter(SellerArrayObject, this, productName);
 
-        specsRecyclerView = (RecyclerView) findViewById(R.id.specs_view);
-        sellerRecyclerView = (RecyclerView) findViewById(R.id.seller_view);
 
         specsLayoutManager = new LinearLayoutManager(this);
         specsLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -140,10 +128,10 @@ public class ProductDetailActivity extends BaseActivity{
         sellerLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         sellerRecyclerView.setLayoutManager(sellerLayoutManager);
 
-        
+
         specsRecyclerView.setNestedScrollingEnabled(false);
         sellerRecyclerView.setNestedScrollingEnabled(false);
-        
+
         specsRecyclerView.setAdapter(specsRecyclerAdapter);
         sellerRecyclerView.setAdapter(sellerRecyclerAdapter);
 
@@ -155,12 +143,12 @@ public class ProductDetailActivity extends BaseActivity{
         sellerRecyclerView.addItemDecoration(new DividerItemDecoration(this, dividerDrawable, 0));
     }
 
-    public void getJsonValue(final String Product) {
+    public void getJsonValue(final String productName) {
 
         specsName = new ArrayList<>();
         specsDescription = new ArrayList<>();
         ProductArrayObject = new ArrayList<>();
-        SellerArrayObject = new ArrayList<>();
+
         ImageArrayList = new ArrayList<>();
         final Product product = new Product();
 
@@ -178,29 +166,6 @@ public class ProductDetailActivity extends BaseActivity{
                     for (int i = 0; i < ImageArray.length(); i++)
                         ImageArrayList.add((String) ImageArray.get(i));
 
-                    for (String j : ImageArrayList) {
-                        Log.i("link", j);
-                    }
-
-                    JSONArray SellerArray = jsonObject.getJSONArray("seller");
-
-                    for (int i = 0; i < SellerArray.length(); i++) {
-                        Seller seller = new Seller();
-                        JSONObject SellerJson = SellerArray.getJSONObject(i);
-                        seller.setSellerName(SellerJson.getString("sname"));
-                        seller.setSellerLogoUrl(SellerJson.getString("logo"));
-                        seller.setPriceAtSeller(SellerJson.getInt("price"));
-                        SellerArrayObject.add(seller);
-
-                    }
-                    for (Seller j : SellerArrayObject) {
-                        Log.i("name", j.getSellerName());
-                        Log.i("logo", j.getSellerLogoUrl());
-                        Log.i("price", "₹" + j.getPriceAtSeller());
-
-                    }
-
-
                     JSONArray jsonArray = jsonObject.getJSONArray("highlights");
                     for (int i = 0; i < jsonArray.length(); i++) {
 
@@ -214,13 +179,68 @@ public class ProductDetailActivity extends BaseActivity{
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                specsRecyclerAdapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.GONE);
+                nestedScrollView.setAlpha(0f);
                 nestedScrollView.setVisibility(View.VISIBLE);
+                nestedScrollView.animate()
+                        .alpha(1f)
+                        .setDuration(mLongAnimationDuration)
+                        .setListener(null);
                 ProductName.setText(product.getProductName());
                 favoriteButton.setFavorite(product.isitFavorite(), false);
                 adapter.notifyDataSetChanged();
                 setViewPagerIndicator();
-                specsRecyclerAdapter.notifyDataSetChanged();
+
+
+
+            }
+        }, null) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("productName", productName);
+                return params;
+            }
+        };
+
+        SingletonRequestQueue.getInstance(this).addToRequestQueue(stringRequest);
+    }
+    public void setSeller(final String productName){
+        SellerArrayObject.clear();
+        Log.i("setSeller","setSeller");
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, JSON_SELLER_REQUEST_URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                Log.i("tagconvertstr", "*" + response + "*");
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONArray SellerArray = jsonObject.getJSONArray("seller");
+
+                    for (int i = 0; i < SellerArray.length(); i++) {
+                        Seller seller = new Seller();
+                        JSONObject SellerJson = SellerArray.getJSONObject(i);
+                        seller.setSellerName(SellerJson.getString("sname"));
+                        seller.setSellerLogoUrl(SellerJson.getString("logo"));
+                        JSONArray price_quantity = SellerJson.getJSONArray("pricequantity");
+                        ArrayList<Integer> priceList = new ArrayList<>();
+                        ArrayList<String> quantityList = new ArrayList<>();
+                        ArrayList<Integer> countList = new ArrayList<>();
+                        for (int j = 0; j < price_quantity.length(); j++) {
+                            JSONObject object1 = price_quantity.getJSONObject(j);
+                            priceList.add(object1.getInt("price"));
+                            quantityList.add(object1.getString("quantity"));
+                            countList.add(object1.getInt("itemCount"));
+                        }
+                        seller.setArrayLists(quantityList, countList, priceList);
+                        SellerArrayObject.add(seller);
+
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 sellerRecyclerAdapter.notifyDataSetChanged();
 
             }
@@ -228,16 +248,16 @@ public class ProductDetailActivity extends BaseActivity{
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
-                params.put("productName", Product);
+                params.put("productName", productName);
                 return params;
             }
         };
 
         SingletonRequestQueue.getInstance(this).addToRequestQueue(stringRequest);
+
     }
-
     public void setViewPagerIndicator() {
-
+        LinearLayout pagerIndicator = (LinearLayout) findViewById(R.id.viewPagerCountDots);
         final int dotCount = adapter.getCount();
         final ImageView[] dots = new ImageView[dotCount];
         for (int i = 0; i < dotCount; i++) {
@@ -248,10 +268,10 @@ public class ProductDetailActivity extends BaseActivity{
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
             params.setMargins(10, 0, 10, 0);
-            pagerIndicator.addView(dots[i],params);
+            pagerIndicator.addView(dots[i], params);
 
         }
-        dots[0].setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.selecteddot,null));
+        dots[0].setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.selecteddot, null));
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -262,10 +282,10 @@ public class ProductDetailActivity extends BaseActivity{
             @Override
             public void onPageSelected(int position) {
 
-                for(int i =0;i<dotCount;i++)
+                for (int i = 0; i < dotCount; i++)
                     dots[i].setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.unselecteddot, null));
 
-                dots[position].setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.selecteddot,null));
+                dots[position].setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.selecteddot, null));
 
 
             }
@@ -283,4 +303,27 @@ public class ProductDetailActivity extends BaseActivity{
         });
     }
 
+    @Override
+    public void onClick(View v) {
+        Intent CartIntent = new Intent(ProductDetailActivity.this, AddToCartActivity.class);
+
+        startActivityForResult(CartIntent,1);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+            Log.i("resultCode",""+resultCode+" "+requestCode);
+            if(resultCode == Activity.RESULT_OK)
+            {
+            invalidateOptionsMenu();
+            sellerRecyclerView.invalidate();
+            setSeller(productName);
+            }
+
+        }
+    }
 }

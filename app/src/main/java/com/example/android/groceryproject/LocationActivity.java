@@ -20,10 +20,16 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -38,10 +44,16 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class LocationActivity extends AppCompatActivity implements
@@ -49,9 +61,10 @@ public class LocationActivity extends AppCompatActivity implements
         OnConnectionFailedListener,
         LocationListener,
         View.OnClickListener,
-        ResultCallback<LocationSettingsResult>,ActivityCompat.OnRequestPermissionsResultCallback{
+        ResultCallback<LocationSettingsResult>, ActivityCompat.OnRequestPermissionsResultCallback {
 
     protected static final String TAG = "MainActivity";
+    private final String JSON_REQUEST_URL= Constants.getInstance().ip+"getLocation.php";
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     protected static final int MY_PERMISSIONS_REQUEST = 1;
@@ -69,40 +82,59 @@ public class LocationActivity extends AppCompatActivity implements
     SearchView searchView;
     CardView locationButton;
     TextView ResultAddress;
-
-
+    ListView listView;
+    ProgressBar progressBar;
+    private Boolean locationCheck;
     protected Boolean mRequestingLocationUpdates;
+
+    LocationSharedPreference sharedPreference;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        sharedPreference = new LocationSharedPreference(this);
+        Intent thisIntent = getIntent();
+        Boolean fromHome = thisIntent.getBooleanExtra("home",false);
+        locationCheck = sharedPreference.checkLocationAvailable();
 
-        ResultAddress = (TextView) findViewById(R.id.latitude);
-        searchView = (SearchView) findViewById(R.id.location_search_view);
-        locationButton = (CardView) findViewById(R.id.location_button);
-        coordinatorLayout=(CoordinatorLayout) findViewById(R.id.location_layout);
+        if (locationCheck && !fromHome) {
+            Intent intent = new Intent(LocationActivity.this, HomeActivity.class);
+            intent.putExtra("Address", sharedPreference.getLocation());
+            startActivity(intent);
+            finish();
+        } else {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            progressBar = (ProgressBar) findViewById(R.id.location_progressbar);
+            listView = (ListView) findViewById(R.id.location_list);
+            searchView = (SearchView) findViewById(R.id.location_search_view);
+            locationButton = (CardView) findViewById(R.id.location_button);
+            coordinatorLayout = (CoordinatorLayout) findViewById(R.id.location_layout);
 
-        mRequestingLocationUpdates = false;
+            mRequestingLocationUpdates = false;
 
-        setSearch();
-        requestLocationPermissions();
-        buildGoogleApiClient();
-        createLocationRequest();
-        buildLocationSettingsRequest();
-        locationButton.setOnClickListener(this);
+
+
+            setSearch();
+            requestLocationPermissions();
+            buildGoogleApiClient();
+            createLocationRequest();
+            buildLocationSettingsRequest();
+            locationButton.setOnClickListener(this);
+        }
     }
+
     private void requestLocationPermissions() {
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 
-                Log.i(TAG,"Displaying  permission rationale to provide additional context.");
+                Log.i(TAG, "Displaying  permission rationale to provide additional context.");
 
-                Snackbar.make(coordinatorLayout, "Request permission",Snackbar.LENGTH_INDEFINITE)
+                Snackbar.make(coordinatorLayout, "Request permission", Snackbar.LENGTH_INDEFINITE)
                         .setAction("okay", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -112,32 +144,35 @@ public class LocationActivity extends AppCompatActivity implements
                         })
                         .show();
             } else {
-                Log.i(TAG,"requesting permission");
+                Log.i(TAG, "requesting permission");
                 ActivityCompat.requestPermissions(LocationActivity.this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},MY_PERMISSIONS_REQUEST);
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST);
             }
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
 
-        Log.i(TAG,""+ Arrays.toString(grantResults));
+        Log.i(TAG, "" + Arrays.toString(grantResults));
 
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST:if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            case MY_PERMISSIONS_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                Snackbar.make(coordinatorLayout,"Location Available",
-                        Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(coordinatorLayout, "Location Available",
+                            Snackbar.LENGTH_SHORT).show();
 
                 } else {
-                Snackbar.make(coordinatorLayout, "Permission not granted",
-                        Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(coordinatorLayout, "Permission not granted",
+                            Snackbar.LENGTH_SHORT).show();
                 }
-            }
+        }
 
 
     }
+
     protected void buildGoogleApiClient() {
         Log.i(TAG, "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -148,7 +183,7 @@ public class LocationActivity extends AppCompatActivity implements
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest()
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
 
@@ -181,11 +216,18 @@ public class LocationActivity extends AppCompatActivity implements
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                if (newText.length() > 2) {
+                if(newText.length() >2){
+                    progressBar.setVisibility(View.VISIBLE);
+                    Toast.makeText(LocationActivity.this,newText,Toast.LENGTH_SHORT).show();
+                    makeVolleyRequest(newText);
 
-                    Toast.makeText(LocationActivity.this, newText, Toast.LENGTH_SHORT).show();
 
                 }
+                else{
+                    progressBar.setVisibility(View.GONE);
+                    listView.setVisibility(View.INVISIBLE);
+                }
+
                 return false;
             }
         });
@@ -199,6 +241,8 @@ public class LocationActivity extends AppCompatActivity implements
             case LocationSettingsStatusCodes.SUCCESS:
                 Log.i(TAG, "All location settings are satisfied.");
                 startLocationUpdates();
+                mGoogleApiClient.registerConnectionCallbacks(this);
+                mGoogleApiClient.registerConnectionFailedListener(this);
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to" +
@@ -229,7 +273,7 @@ public class LocationActivity extends AppCompatActivity implements
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
-                        if(!locationButton.isEnabled())
+                        if (!locationButton.isEnabled())
                             locationButton.setEnabled(true);
                         break;
 
@@ -237,7 +281,6 @@ public class LocationActivity extends AppCompatActivity implements
                 break;
         }
     }
-
 
 
     protected void startLocationUpdates() {
@@ -277,7 +320,14 @@ public class LocationActivity extends AppCompatActivity implements
                 addressFragments.add(address.getAdminArea());
                 addressFragments.add(address.getCountryName());
                 String s1 = TextUtils.join(System.getProperty("line.separator"), addressFragments);
-                ResultAddress.setText(s1);
+                //ResultAddress.setText(s1);
+                sharedPreference.setLocation(s1);
+                Intent intent = new Intent(LocationActivity.this, HomeActivity.class);
+                intent.putExtra("Address", sharedPreference.getLocation());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+
             }
         }
     }
@@ -361,11 +411,91 @@ public class LocationActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(View v) {
-            checkLocationSettings();
-            mGoogleApiClient.registerConnectionCallbacks(this);
-            mGoogleApiClient.registerConnectionFailedListener(this);
-            locationButton.setEnabled(false);
+        checkLocationSettings();
+
+        //locationButton.setEnabled(false);
 
 
     }
+    public void makeVolleyRequest(final String newText)
+    {
+
+
+        final List<String> searchList = new ArrayList<>();
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(LocationActivity.this,android.R.layout.simple_list_item_1,searchList);
+
+        listView.setAdapter(adapter);
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, JSON_REQUEST_URL,new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                listView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+
+                //searchList.clear();
+                Log.i("tagconvertstr", "*" + response + "*");
+
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    Boolean success = jsonObject.getBoolean("success");
+                    Log.i("boolean", "*" + success + "*");
+                    if(success) {
+                        JSONArray jsonArray = jsonObject.getJSONArray("search");
+                        for(int i=0;i<jsonArray.length();i++) {
+
+                            JSONObject object = jsonArray.getJSONObject(i);
+                            String Locality = object.getString("locality");
+                            String City = object.getString("city");
+                            String State = object.getString("state");
+                            String result = Locality+", "+City+", "+State;
+                            searchList.add(result);
+
+                        }
+
+                    }
+                    else
+                    {
+                        Toast.makeText(LocationActivity.this,"No result found",Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                adapter.notifyDataSetChanged();
+
+
+
+
+            }
+        }, null) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String,String> params = new HashMap<>();
+                params.put("item",newText);
+                Log.i("params",""+params+"");
+                return params;
+            }
+        };
+
+        SingletonRequestQueue.getInstance(this).addToRequestQueue(stringRequest);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String address  = searchList.get(position);
+                sharedPreference.setLocation(address);
+                Intent intent = new Intent(LocationActivity.this, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.putExtra("Address", sharedPreference.getLocation());
+                startActivity(intent);
+                finish();
+
+            }
+        });
+
+    }
+
 }

@@ -1,20 +1,27 @@
 {
   "project_info": {
-    "project_number": "955100853253",
-    "project_id": "groceryproject-7dca7"
+    "project_number": "359416025464",
+    "firebase_url": "https://grocery-12ef2.firebaseio.com",
+    "project_id": "grocery-12ef2",
+    "storage_bucket": "grocery-12ef2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:955100853253:android:a64dbeb9fbfe03f9",
+        "mobilesdk_app_id": "1:359416025464:android:a64dbeb9fbfe03f9",
         "android_client_info": {
           "package_name": "com.example.android.groceryproject"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "359416025464-jql618u0bjnvq9tjf11sulue58mgv7e2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBWjciEAsKWSTriHaTfLWz8O4ebLLD6TEk"
+          "current_key": "AIzaSyCiIHIA72zNf89xNsQ9I7Ak_IdiUfkFXzA"
         }
       ],
       "services": {
@@ -26,7 +33,7 @@
           "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

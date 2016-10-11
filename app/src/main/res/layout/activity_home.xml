@@ -1,100 +1,170 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <include
+            android:id="@+id/home_Activity_toolbar"
             layout="@layout/main_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <LinearLayout
+            android:id="@+id/connection_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:padding="8dp"
+                android:text="@string/oops"
+                android:textColor="@color/black"
+                android:textSize="20dp" />
+
+            <TextView
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingBottom="12dp"
+                android:text="@string/no_iternet_connection" />
+
+            <Button
+                android:id="@+id/retry_button"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:background="@color/colorAccent"
+                android:padding="10dp"
+                android:text="@string/retry"
+                android:textColor="@color/white" />
+        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/fragment_placeholder"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_below="@+id/home_Activity_toolbar">
 
         </FrameLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
-    <ScrollView
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navigation_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/white"
-        android:elevation="16dp"
-        android:overScrollMode="ifContentScrolls">
+        app:elevation="6dp"
+        app:headerLayout="@layout/navigation_header"
+        app:menu="@menu/navigation_menu"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    <!-- <ScrollView
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_gravity="start"
+         android:background="@color/white"
+         android:elevation="16dp"
+         android:overScrollMode="ifContentScrolls">
 
-            <include layout="@layout/navigation_header" />
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:padding="10dp"
-                android:text="@string/popular_categories"
-                android:textColor="@color/dark_grey"
-                android:textSize="16sp" />
+             <include layout="@layout/navigation_header" />
 
-            <ListView
-                android:id="@+id/popular_categories_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="6dp"
-                android:divider="@null" />
+                 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                     android:id="@+id/home"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:textSize="16sp"
+                     android:background="?selectableItemBackground"
+                     android:clickable="true"
+                     android:focusable="true"
+                     android:text="@string/home"
+                     android:textStyle="bold"
+                     android:padding="13dp"
+                     android:layout_marginLeft="3dp"/>
+
+             <View
+                 android:layout_width="match_parent"
+                 android:layout_height="1dp"
+                 android:layout_marginBottom="10dp"
+                 android:background="@drawable/divider" />
+
+             <TextView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_marginLeft="3dp"
+                 android:padding="10dp"
+                 android:text="@string/popular_categories" />
+
+             <ListView
+                 android:id="@+id/popular_categories_list"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:divider="@null" />
+
+             <View
+                 android:layout_width="match_parent"
+                 android:layout_height="1dp"
+                 android:layout_marginBottom="10dp"
+                 android:layout_marginTop="10dp"
+                 android:background="@drawable/divider" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:padding="10dp"
-                android:text="@string/all_categories"
-                android:textColor="@color/dark_grey"
-                android:textSize="16sp" />
+             <TextView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_marginLeft="3dp"
+                 android:padding="10dp"
+                 android:text="@string/all_categories" />
 
-            <ExpandableListView
+             <ExpandableListView
 
-                android:id="@+id/expandable_listView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="6dp"
-                android:childDivider="@null"
-                android:divider="@null"
-                android:groupIndicator="@drawable/group_indicator"
-                android:indicatorEnd="285dp"
-                android:indicatorStart="250dp"
-                android:scrollbars="none" />
+                 android:id="@+id/expandable_listView"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:childDivider="@null"
+                 android:divider="@null"
+                 android:groupIndicator="@drawable/group_indicator"
+                 android:indicatorEnd="285dp"
+                 android:indicatorStart="250dp"
+                 android:scrollbars="none" />
+
+             <View
+                 android:layout_width="match_parent"
+                 android:layout_height="1dp"
+                 android:layout_marginBottom="10dp"
+                 android:layout_marginTop="10dp"
+                 android:background="@drawable/divider" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:padding="10dp"
-                android:text="@string/others"
-                android:textColor="@color/dark_grey"
-                android:textSize="16sp" />
+             <TextView
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:layout_marginLeft="3dp"
+                 android:padding="10dp"
+                 android:text="@string/others" />
 
-            <ListView
-                android:id="@+id/other_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="6dp"
-                android:divider="@null"/>
+             <ListView
+                 android:id="@+id/other_list"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:divider="@null" />
 
-        </LinearLayout>
-    </ScrollView>
+         </LinearLayout>
+     </ScrollView>-->
 </android.support.v4.widget.DrawerLayout>

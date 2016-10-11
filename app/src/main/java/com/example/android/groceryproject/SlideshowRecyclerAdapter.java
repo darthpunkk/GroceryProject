@@ -11,11 +11,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -42,30 +44,10 @@ public class SlideshowRecyclerAdapter extends RecyclerView.Adapter<SlideshowRecy
 
     @Override
     public void onBindViewHolder(final ImageViewHolder holder, int position) {
-        //position = position %Images.size();
-        imageLoader = SingletonRequestQueue.getInstance(mContext).getImageLoader();
-         URL = Images.get(position);
-        imageLoader.get(URL, new ImageLoader.ImageListener() {
-            @Override
-            public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
-                if(response!=null){
-                    Bitmap bitmap = response.getBitmap();
-                    {
-                        if(bitmap!=null){
-
-                            holder.progressBar.setVisibility(View.GONE);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-        Log.i("adapter",URL);
-        holder.itemImage.setImageUrl(URL, imageLoader);
+        Picasso.with(mContext).load(Images.get(position)).into(holder.itemImage);
+        //imageLoader = SingletonRequestQueue.getInstance(mContext).getImageLoader();
+        //String URL =Images.get(position);
+        //holder.itemImage.setImageUrl(URL, imageLoader);
 
     }
 
@@ -76,15 +58,14 @@ public class SlideshowRecyclerAdapter extends RecyclerView.Adapter<SlideshowRecy
 
     public static class ImageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        NetworkImageView itemImage;
-        ProgressBar progressBar;
+         ImageView itemImage;
 
 
         public ImageViewHolder(View itemView) {
             super(itemView);
-            itemImage = (NetworkImageView) itemView.findViewById(R.id.slideshow_image);
-            itemView.setOnClickListener(this);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.slideshow_progressbar);
+            itemImage = (ImageView) itemView.findViewById(R.id.slideshow_image);
+            //itemView.setOnClickListener(this);
+
 
         }
 

@@ -10,6 +10,9 @@ import android.widget.ImageView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.example.android.groceryproject.R;
+import com.example.android.groceryproject.SingletonRequestQueue;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -20,8 +23,7 @@ public class ViewPagerAdapter extends PagerAdapter{
 
     ArrayList<String> ImageArray;
     private Context mContext;
-    private ImageLoader imageLoader;
-    NetworkImageView networkImageView;
+    ImageView ImageView;
 
     public ViewPagerAdapter(ArrayList<String> imageArray,Context mContext) {
         this.mContext = mContext;
@@ -42,9 +44,8 @@ public class ViewPagerAdapter extends PagerAdapter{
     public Object instantiateItem(ViewGroup container, int position) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         ViewGroup viewGroup = (ViewGroup)inflater.inflate(R.layout.imageview,container,false);
-        networkImageView = (NetworkImageView)viewGroup.findViewById(R.id.image);
-        imageLoader= SingletonRequestQueue.getInstance(mContext).getImageLoader();
-        networkImageView.setImageUrl(ImageArray.get(position),imageLoader);
+        ImageView = (ImageView)viewGroup.findViewById(R.id.image);
+        Picasso.with(mContext).load(ImageArray.get(position)).into(ImageView);
         container.addView(viewGroup);
         return viewGroup;
     }

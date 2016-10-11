@@ -1,30 +1,50 @@
 package com.example.android.groceryproject;
 
-import android.widget.ImageView;
-
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 /**
  * Created by Vedant on 6/2/2016.
  */
 public class Product {
+
     private String productName;
     private int productPrice;
-    private int productImageId;
     private String productImageUrl;
-    private String productSellerUrl;
-    private int productSellerId;
+
     private String sellerCount;
     private boolean favorite;
-    private ArrayList<String> ProductImageUrlArray;
     private String SellerName;
+    private String  itemQuantity;
 
-    public ArrayList<String> getProductImageUrlArray() {
-        return ProductImageUrlArray;
+    private int itemCount;
+
+    public String getItemQuantity() {
+        return itemQuantity;
     }
 
-    public void setProductImageUrlArray(ArrayList<String> productImageUrlArray) {
-        ProductImageUrlArray = productImageUrlArray;
+    public void setItemQuantity(String itemQuantity) {
+        this.itemQuantity = itemQuantity;
+    }
+
+    public int getItemCount() {
+        return itemCount;
+    }
+
+    public void setItemCount(int itemCount) {
+        this.itemCount = itemCount;
+    }
+
+    private LinkedHashMap<Integer, String> productQuantity;
+
+    public Product() {}
+
+
+    public LinkedHashMap<Integer, String> getProductQuantity() {
+        return productQuantity;
+    }
+
+    public void setProductQuantity(LinkedHashMap<Integer, String> productQuantity) {
+        this.productQuantity = productQuantity;
     }
 
 
@@ -37,8 +57,6 @@ public class Product {
     }
 
 
-
-
     public boolean isitFavorite() {
         return favorite;
     }
@@ -46,7 +64,6 @@ public class Product {
     public void setitFavorite(boolean favorite) {
         this.favorite = favorite;
     }
-
 
 
     public String getSellerCount() {
@@ -57,19 +74,6 @@ public class Product {
         this.sellerCount = sellerCount;
     }
 
-
-
-    public Product(){} //default constructor
-
-    /*public Product(String productName, String productPrice, int productImageId,
-                   int productSellerId ,String productImageUrl , String productSellerUrl) {
-        this.productName = productName;
-        this.productPrice = productPrice;
-        this.productImageId = productImageId;
-        this.productSellerId = productSellerId;
-        this.productImageUrl = productImageUrl;
-        this.productSellerUrl = productSellerUrl;
-    }*/
 
     public String getProductName() {
         return productName;
@@ -87,28 +91,14 @@ public class Product {
         this.productPrice = productPrice;
     }
 
-    public int getProductImageId() {
-        return productImageId;
+
+    public String getProductImageUrl() {
+        return productImageUrl;
     }
 
-    public void setProductImageId(int productImageId) {
-        this.productImageId = productImageId;
+    public void setProductImageUrl(String productImageUrl) {
+        this.productImageUrl = productImageUrl;
     }
-
-    public int getProductSellerId() {
-        return productSellerId;
-    }
-
-    public void setProductSellerId(int productSellerId) { this.productSellerId = productSellerId; }
-
-    public String getProductImageUrl(){ return  productImageUrl; }
-
-    public void setProductImageUrl(String productImageUrl) { this.productImageUrl = productImageUrl; }
-
-    public String getProductSellerUrl(){ return  productSellerUrl; }
-
-    public void setProductSellerUrl(String productSellerUrl){ this.productSellerUrl = productSellerUrl; }
-
-
-
 }
+
+

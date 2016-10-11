@@ -1,0 +1,116 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/edit_name"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey">
+
+    <LinearLayout
+        android:id="@+id/toolbar_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center|left"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="10dp"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|left"
+            android:paddingLeft="10dp"
+            android:text="@string/filter"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_below="@+id/toolbar_dialog"
+        android:layout_above="@+id/dialog_button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingTop="6dp">
+
+        <ListView
+            android:id="@+id/filter_listview1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:choiceMode="singleChoice" />
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:animateLayoutChanges="true"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.SearchView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:id="@+id/search_view_dialog"
+                android:layout_marginTop="6dp"
+                app:iconifiedByDefault="false" />
+
+            <ListView
+                android:id="@+id/filter_listview2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:id="@+id/dialog_button"
+        android:layout_width="match_parent"
+        android:paddingBottom="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_height="60dp">
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/divider_dialog" />
+        <Button
+            android:layout_below="@+id/divider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:textSize="16sp"
+            android:id="@+id/clear_button"
+            android:layout_toLeftOf="@+id/apply_button"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:text="Clear"/>
+        <Button
+            android:id="@+id/apply_button"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/divider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/colorAccent"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:text="Apply"/>
+    </RelativeLayout>
+</RelativeLayout>

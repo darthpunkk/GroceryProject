@@ -39,13 +39,28 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <ListView
-            android:id="@+id/listview_search"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="invisible">
+            android:layout_height="wrap_content">
 
-        </ListView>
+            <ListView
+                android:id="@+id/listview_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:visibility="gone">
+
+
+            </ListView>
+
+            <ProgressBar
+                android:id="@+id/search_progressbar"
+                style="?attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="gone" />
+        </RelativeLayout>
 
 
     </LinearLayout>

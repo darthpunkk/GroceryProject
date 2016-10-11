@@ -1,6 +1,8 @@
 package com.example.android.groceryproject;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -72,19 +74,19 @@ public class CustomExpandableAdapter extends BaseExpandableListAdapter {
 
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.list_group_item, null);
+            convertView = layoutInflater.inflate(R.layout.custom_textview, null);
         }
-        groupHeaderTextView = (TextView) convertView.findViewById(R.id.list_group_header);
+        groupHeaderTextView = (TextView) convertView.findViewById(R.id.custom_text);
         groupHeaderTextView.setText(groupHeaderText);
 
         if(isExpanded)
         {
-            groupHeaderTextView.setTypeface(null,Typeface.BOLD);
+            groupHeaderTextView.setTextColor(Color.BLACK);
 
         }
         if(!isExpanded)
         {
-            groupHeaderTextView.setTypeface(null,Typeface.NORMAL);
+            groupHeaderTextView.setTextColor(ContextCompat.getColor(mContext,R.color.dark_grey));
         }
 
 
@@ -100,12 +102,10 @@ public class CustomExpandableAdapter extends BaseExpandableListAdapter {
 
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.list_child_item, null);
+            convertView = layoutInflater.inflate(R.layout.custom_textview_margin, null);
         }
-        TextView childTextView = (TextView) convertView.findViewById(R.id.list_group_child);
+        TextView childTextView = (TextView) convertView.findViewById(R.id.custom_text_margin);
         childTextView.setText(childText);
-
-        final LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.outer_layout);
 
         return convertView;
 

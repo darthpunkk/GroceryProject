@@ -1,0 +1,65 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/View_all_container"
+    tools:context="com.example.android.groceryproject.ViewAllFragment">
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:descendantFocusability="blocksDescendants"
+        android:orientation="vertical">
+
+            <TextView
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="6dp"
+                android:text="@string/heading1"
+                android:layout_centerVertical="true"
+                android:textSize="21sp" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="?android:attr/listDivider" />
+
+        <RelativeLayout
+            android:id="@+id/view_all_layout"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/view_all_progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_centerInParent="true"
+            style="?android:attr/progressBarStyle"/>
+
+<android.support.v7.widget.RecyclerView
+    android:id="@+id/recycle_list3"
+    android:overScrollMode="ifContentScrolls"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
+
+            <!--<GridView
+                android:id="@+id/gridView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/grey"
+                android:horizontalSpacing="0.6dp"
+                android:numColumns="2"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="0.6dp" />-->
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

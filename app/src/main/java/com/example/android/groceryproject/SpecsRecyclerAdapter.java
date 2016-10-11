@@ -1,13 +1,16 @@
 package com.example.android.groceryproject;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.util.ArrayList;
 
@@ -38,6 +41,20 @@ public class SpecsRecyclerAdapter extends RecyclerView.Adapter<SpecsRecyclerAdap
 
         holder.SpecsName.setText(SpecsName.get(position));
         holder.SpecsDesc.setText(SpecsDesc.get(position));
+        holder.SpecsDesc.post(new Runnable() {
+            @Override
+            public void run() {
+                int lineCount =  holder.SpecsDesc.getLayout().getLineCount();
+                int ellipseCount = holder.SpecsDesc.getLayout().getEllipsisCount(lineCount);
+                Log.v("Line count: ", lineCount+" "+ellipseCount);
+                if(ellipseCount>0){
+                    holder.SpecsDesc.setOnClickListener(holder);
+                    holder.ExandedIcon.setOnClickListener(holder);
+                    holder.ExandedIcon.setBackgroundResource(R.drawable.ic_expand_more);
+                }
+            }
+        });
+
 
 
     }
@@ -47,19 +64,40 @@ public class SpecsRecyclerAdapter extends RecyclerView.Adapter<SpecsRecyclerAdap
         return SpecsName.size();
     }
 
-    public static class SimpleViewHolder extends RecyclerView.ViewHolder {
+    public static class SimpleViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView SpecsName;
-       ExpandableTextView SpecsDesc;
+        TextView SpecsDesc;
+        ImageView ExandedIcon;
+        boolean isExpanded=false;
+
 
 
         public SimpleViewHolder(View itemView) {
             super(itemView);
-
+            ExandedIcon = (ImageView) itemView.findViewById(R.id.expand_collapse);
             SpecsName = (TextView) itemView.findViewById(R.id.specs_name);
-            SpecsDesc = (ExpandableTextView) itemView.findViewById(R.id.expand_text_view);
+            SpecsDesc = (TextView) itemView.findViewById(R.id.expand_text_view);
 
 
+
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            isExpanded=!isExpanded;
+            if(isExpanded) {
+                SpecsDesc.setSingleLine(false);
+                SpecsDesc.setEllipsize(null);
+                ExandedIcon.setBackgroundResource(R.drawable.ic_expand_less);
+
+            }
+            else {
+                SpecsDesc.setSingleLine(true);
+                SpecsDesc.setEllipsize(TextUtils.TruncateAt.END);
+                ExandedIcon.setBackgroundResource(R.drawable.ic_expand_more);
+            }
 
         }
     }

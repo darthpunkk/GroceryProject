@@ -1,38 +1,28 @@
 <resources>
     <string name="app_name">GroceryProject</string>
-    <string name="menu_icon_title">menu</string>
+    <string name="facebook_app_id">1389114357782030</string>
+    <string name="menu_icon_title">Menu</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="search_title">Search</string>
     <string name="all_categories">All Categories</string>
     <string name="popular_categories">Popular Categories</string>
     <string name="others">Others</string>
-    <string name="compare_prices_of_1000_products">Compare prices of 1000+ products</string>
-    <string name="others_list_icon">icon</string>
+    <string name="others_list_icon">Icon</string>
     <string name="heading1">Deals of the Day</string>
     <string name="heading2">Popular Products</string>
-    <string name="search_query_hint">Search for Products...</string>
+    <string name="search_query_hint">Search for Products…</string>
     <string name="location_query">Pick your Locality</string>
-    <string-array name="others_list_textitems">
-        <item>Log out</item>
-        <item>Favourites</item>
-        <item>Rate Our App</item>
-        <item>Contact Us</item>
-        <item>Recently Viewed</item>
-    </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="sort">Sort</string>
     <string name="filter">Filter</string>
     <string name="sort_by">Sort by</string>
-    <string-array name="sort_by_array">
-        <item>Popularity</item>
-        <item>Price - low to high</item>
-        <item>Price - high to low</item>
-        <item>Alphabetical</item>
-    </string-array>
-    <string name="cancel">cancel</string>
+
+    <string name="on_create_options">On Create Options</string>
+    <string name="on_prepare_options">On Prepare Options</string>
+
+
+    <string name="cancel">Cancel</string>
     <string name="currency">₹</string>
     <string name="favorite">added to favorites</string>
     <string name="unfavorite">removed from favorites</string>
@@ -44,7 +34,7 @@
     <string name="no_geocoder_available">No geocoder available</string>
 
     <string name="fetch_address">Fetch address</string>
-
+    <string name="spinner_title_quantity">Select quantity</string>
     <string name="address_found">Address found</string>
 
     <string name="no_address_found">Sorry, no address found</string>
@@ -54,4 +44,51 @@
     <string name="spec_name">About</string>
     <string name="_10">10</string>
     <string name="add_cart">add cart</string>
+    <string name="home">Home</string>
+    <string name="start_shopping">Start Shopping</string>
+    <string name="your_cart_is_empty">Your Cart is empty!</string>
+    <string name="add_items_to_it_now">Add items to it now.</string>
+    <string name="no_items_yet">No items yet</string>
+    <string name="continue_shopping">Continue Shopping</string>
+    <string name="more">MORE</string>
+    <string name="retry">Retry</string>
+    <string name="oops">Oops!</string>
+    <string name="no_iternet_connection">No iternet Connection</string>
+    <string name="guest">Guest</string>
+    <string name="quantity">quantity</string>
+    <string name="checkout">Checkout</string>
+    <string name="_0_0">₹ 0.0</string>
+    <string name="more_categories">More Categories</string>
+    <string name="less_categories">Less Categories</string>
+    <string name="from_grofers">From Grofers</string>
+
+    <string-array name="others_list_textitems">
+        <item>Log out</item>
+        <item>Favourites</item>
+        <item>Rate Our App</item>
+        <item>Contact Us</item>
+        <item>Recently Viewed</item>
+    </string-array>
+
+    <string-array name="sort_by_array">
+        <item>Popularity</item>
+        <item>Price - low to high</item>
+        <item>Price - high to low</item>
+        <item>Alphabetical</item>
+    </string-array>
+
+    <string-array name="typed_array">
+        <item>@drawable/a</item>
+        <item>@drawable/b</item>
+        <item>@drawable/c</item>
+        <item>@drawable/d</item>
+    </string-array>
+
+    <string-array name="filter_category">
+        <item>Brand</item>
+        <item>Price</item>
+        <item>Discount</item>
+    </string-array>
+
+
 </resources>

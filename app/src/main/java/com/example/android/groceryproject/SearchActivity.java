@@ -1,34 +1,28 @@
 package com.example.android.groceryproject;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +32,8 @@ public class SearchActivity extends AppCompatActivity {
 
     SearchView searchView;
     ListView listView;
-    private final String JSON_REQUEST_URL="http://14.142.72.13/mandi/test.php";
+    ProgressBar progressBar;
+    private final String JSON_REQUEST_URL= Constants.getInstance().ip+"test.php";
 
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -67,6 +62,7 @@ public class SearchActivity extends AppCompatActivity {
 
         searchView = (SearchView) findViewById(R.id.search_view);
         listView = (ListView)findViewById(R.id.listview_search);
+        progressBar = (ProgressBar) findViewById(R.id.search_progressbar);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -79,14 +75,15 @@ public class SearchActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
 
                 if(newText.length() >2){
-
+                    progressBar.setVisibility(View.VISIBLE);
                     Toast.makeText(SearchActivity.this,newText,Toast.LENGTH_SHORT).show();
                     makeVolleyRequest(newText);
 
 
                 }
                 else{
-                    listView.setVisibility(View.INVISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                    listView.setVisibility(View.GONE);
                 }
 
                 return false;
@@ -100,7 +97,7 @@ public class SearchActivity extends AppCompatActivity {
 
         final List<String> searchList = new ArrayList<>();
 
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(SearchActivity.this, R.layout.list_textview,searchList);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(SearchActivity.this,android.R.layout.simple_list_item_1,searchList);
 
         listView.setAdapter(adapter);
 
@@ -110,6 +107,7 @@ public class SearchActivity extends AppCompatActivity {
             public void onResponse(String response) {
 
                 listView.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
 
                 //searchList.clear();
                 Log.i("tagconvertstr", "*" + response + "*");
@@ -125,7 +123,7 @@ public class SearchActivity extends AppCompatActivity {
                             JSONObject object = jsonArray.getJSONObject(i);
                             String searchItemName = object.getString("name");
                             String searchItemCategory = object.getString("category");
-                            String result = searchItemName+" in "+searchItemCategory;
+                            String result = searchItemName;//+" in "+searchItemCategory;
                             searchList.add(result);
 
                         }
@@ -156,6 +154,16 @@ public class SearchActivity extends AppCompatActivity {
         };
 
         SingletonRequestQueue.getInstance(this).addToRequestQueue(stringRequest);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(SearchActivity.this,ProductDetailActivity.class);
+                intent.putExtra("product",searchList.get(position));
+                startActivity(intent);
+
+            }
+        });
 
     }
 

@@ -17,6 +17,7 @@ import com.example.android.groceryproject.R;
  */
 public class CustomListViewDrawerAdapter extends ArrayAdapter<String>{
     private String[] itemName;
+
     private TypedArray iconArray;
     private Context context;
     private LayoutInflater layoutInflater;
@@ -36,10 +37,10 @@ public class CustomListViewDrawerAdapter extends ArrayAdapter<String>{
         view=layoutInflater.inflate(R.layout.others_list_items, null,true);
 
         TextView textView = (TextView) view.findViewById(R.id.others_list_textview);
-        ImageView imageView = (ImageView) view.findViewById(R.id.others_list_icon);
+        //ImageView imageView = (ImageView) view.findViewById(R.id.others_list_icon);
 
         textView.setText(itemName[position]);
-        imageView.setImageResource(iconArray.getResourceId(position,0));
+        //imageView.setImageResource(iconArray.getResourceId(position,0));
 
         return view;
 

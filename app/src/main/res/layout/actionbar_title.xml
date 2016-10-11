@@ -20,7 +20,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="@string/compare_prices_of_1000_products"
         android:layout_marginLeft="2dp"
         android:textColor="@color/white"
         android:textSize="14sp" />

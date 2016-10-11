@@ -3,14 +3,30 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="170dp"
-    android:padding="16dp"
+    android:padding="12dp"
     android:gravity="bottom"
     android:background="@drawable/header">
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/navigation_header_profile_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_account_circle"
+        android:layout_marginBottom="6dp" />
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/navigation_header_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Header"
+        android:text="@string/guest"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/header_textsize"/>
+        android:textSize="16sp"/>
 
+    <TextView
+        android:id="@+id/navigation_header_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/guest"
+        android:visibility="invisible"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
 </LinearLayout>

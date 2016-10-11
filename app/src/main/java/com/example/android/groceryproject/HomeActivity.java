@@ -3,43 +3,32 @@ package com.example.android.groceryproject;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request.Method;
-import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeActivity extends BaseActivity {
 
@@ -49,41 +38,43 @@ public class HomeActivity extends BaseActivity {
     DrawerLayout mDrawer;
     ActionBarDrawerToggle mToggle;
 
-
+    Intent intent;
     String[] othersListText;
-    TypedArray othersIcons;
+
     CustomExpandableAdapter customExpandableAdapter;
 
     List<String> listDataHeader, listPopularCategory;
     HashMap<String, List<String>> listDataChild;
-    CustomListViewDrawerAdapter othersListAdapter;
 
+    MenuItem Login;
     ArrayAdapter<String> PopularCategoryListAdapter;
-
     CustomListScroll customListScroll;
     ExpandableListView expandableListView;
     ListView popularCategoryListView;
     ListView otherslistView;
-
-    LinearLayout ToolbarTitle;
-
-
-    @Override
-    protected void onResume() {
-        Log.i("resume","resume");
-        super.onResume();
-        invalidateOptionsMenu();
-    }
-
-
-
-
-    private static final String JSON_ALL_CATEGORY_REQUEST_URL = "http://14.142.72.13/mandi/category.json";
-    private static final String JSON_POP_CATEGORY_REQUEST_URL = "http://14.142.72.13/mandi/popularcategory.json";
+    NavigationView navigationView;
+    LinearLayout ToolbarTitle, linearLayout;
+    LoginSharedPreference loginSharedPreference;
+    CircleImageView circleImageView;
+    TextView acc_name,acc_email;
+    LocationSharedPreference lsp;
+    private static final String JSON_ALL_CATEGORY_REQUEST_URL = Constants.getInstance().ip + "category.json";
+    private static final String JSON_POP_CATEGORY_REQUEST_URL = Constants.getInstance().ip + "popularcategory.json";
     private static final String CATEGORY_NAME = "Category";
     private static final String SUBCATEGORY_NAME = "SubCategory";
     private static final String SUBITEM_NAME = "subitem";
     private static final String FRAGMENT_ARG = "fragment_argument";
+
+    CustomListViewDrawerAdapter othersListAdapter;
+    TypedArray othersIcons;
+    Menu menu;
+
+    @Override
+    protected void onResume() {
+        Log.i("resume", "resume");
+        super.onResume();
+        invalidateOptionsMenu();
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -103,48 +94,154 @@ public class HomeActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        linearLayout = (LinearLayout) findViewById(R.id.connection_container);
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        mToolbar = (Toolbar) findViewById(R.id.app_toolbar);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ToolbarTitle = (LinearLayout) findViewById(R.id.toolbar_layout);
+        loginSharedPreference = new LoginSharedPreference(this);
+        lsp = new LocationSharedPreference(this);
+        View view = navigationView.getHeaderView(0);
 
+        circleImageView = (CircleImageView)view.findViewById(R.id.navigation_header_profile_image);
+        acc_name = (TextView)view.findViewById(R.id.navigation_header_name);
+        acc_email = (TextView) view.findViewById(R.id.navigation_header_email);
+       if(loginSharedPreference.isLoggedIn()){
+            Picasso.with(this).load(loginSharedPreference.getKeyProfileUrl()).noFade().into(circleImageView);
+            acc_name.setText(loginSharedPreference.getKeyName());
+           acc_email.setVisibility(View.VISIBLE);
+            acc_email.setText(loginSharedPreference.getKeyMail());
+        }
+
+        menu = navigationView.getMenu();
+        MenuItem location = menu.findItem(R.id.nav_location);
+        Login = menu.findItem(R.id.nav_login);
+        location.setTitle(lsp.getLocation());
+        if(loginSharedPreference.isLoggedIn()){
+            Login.setTitle("Log Out");
+
+        }
+        Retry();
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                switch (item.getItemId()) {
+
+                    case R.id.nav_location:
+                        Intent intent = new Intent(HomeActivity.this, LocationActivity.class);
+                        intent.putExtra("home", true);
+                        startActivity(intent);
+                        break;
+
+                    case R.id.nav_home:
+                        fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.fragment_placeholder, new HomePageFragment());
+                        fragmentTransaction.commit();
+                        break;
+                    case R.id.nav_favourites:
+                        intent = new Intent(HomeActivity.this, FavouritesActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.nav_login:
+                        if(!loginSharedPreference.isLoggedIn()) {
+                            intent = new Intent(HomeActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }
+                        else{
+                            loginSharedPreference.LogOut();
+                            Login.setTitle("Login");
+                            acc_name.setText("Guest");
+                            acc_email.setVisibility(View.INVISIBLE);
+                            circleImageView.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),R.drawable.ic_account_circle));
+                            Toast.makeText(getApplicationContext(),"Logged out",Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case R.id.nav_rate_us:
+                        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store"));
+                        startActivity(intent);
+                        break;
+                    case R.id.nav_contact_us:
+                        intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
+                        intent.setData(Uri.parse("test@gmail.com"));
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "Contact us");
+                        startActivity(intent);
+                        break;
+
+                }
+                mDrawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
+
+
+    }
+
+    private void Retry() {
+
+        linearLayout.setVisibility(View.GONE);
         setupActionBar();
-        setupNavigationDrawer();
+        //setupNavigationDrawer();
         fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.fragment_placeholder, new HomePageFragment());
+        //fragmentTransaction.
         fragmentTransaction.commit();
 
     }
 
     public void setupActionBar() {
-        mToolbar = (Toolbar) findViewById(R.id.app_toolbar);
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ToolbarTitle = (LinearLayout) findViewById(R.id.toolbar_layout);
+
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle(null);
         mToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.drawer_open, R.string.drawer_close);
         mDrawer.addDrawerListener(mToggle);
-
-        //getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        //getSupportActionBar().setCustomView(R.layout.actionbar_title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        TextView toolbarTitle = (TextView) findViewById(R.id.toolbar_title);
+        // Intent intent = getIntent();
+        // Log.i("HomePageFragment",intent.getStringExtra("Address"));
+        toolbarTitle.setText(lsp.getLocation());
+
 
         ToolbarTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HomeActivity.this, LocationActivity.class);
+                intent.putExtra("home", true);
+                //intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             }
         });
 
     }
 
-    public void setupNavigationDrawer() {
+   /* public void setupNavigationDrawer() {
         customListScroll = new CustomListScroll();
+        setHomeActionLayout();
         setPopularCategoryList();
         setAllCategoryList();
         setOthersList();
+    }*/
+
+   /* private void setHomeActionLayout() {
+
+        TextView HomeText = (TextView) findViewById(R.id.home);
+        HomeText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_placeholder, new HomePageFragment());
+                fragmentTransaction.commit();
+                mDrawer.closeDrawer(GravityCompat.START);
+
+            }
+        });
+
     }
 
-    private void setPopularCategoryList() {
+    /*private void setPopularCategoryList() {
 
 
         popularCategoryListView = (ListView) findViewById(R.id.popular_categories_list);
@@ -162,14 +259,10 @@ public class HomeActivity extends BaseActivity {
 
                     JSONArray jsonArray = response.getJSONArray("PopularCategories");
                     for (int i = 0; i < jsonArray.length(); i++) {
-
-                        JSONObject Item = jsonArray.getJSONObject(i);
-                        String ItemName = Item.getString(CATEGORY_NAME);
-                        listPopularCategory.add(ItemName);
-
+                        listPopularCategory.add((String) jsonArray.get(i));
                     }
 
-                    PopularCategoryListAdapter = new ArrayAdapter<>(HomeActivity.this, R.layout.list_textview, listPopularCategory);
+                    PopularCategoryListAdapter = new ArrayAdapter<>(HomeActivity.this, R.layout.custom_textview, listPopularCategory);
                     popularCategoryListView.setAdapter(PopularCategoryListAdapter);
                     customListScroll.setListViewHeightBasedOnChildren(popularCategoryListView);
 
@@ -193,9 +286,9 @@ public class HomeActivity extends BaseActivity {
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 ProductListFragment productListFragment = new ProductListFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString(FRAGMENT_ARG,parent.getItemAtPosition(position).toString());
+                bundle.putString(FRAGMENT_ARG, parent.getItemAtPosition(position).toString());
                 productListFragment.setArguments(bundle);
-                fragmentTransaction.replace(R.id.fragment_placeholder, productListFragment);
+                fragmentTransaction.replace(R.id.fragment_placeholder, productListFragment, "productList");
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 mDrawer.closeDrawer(GravityCompat.START);
@@ -232,11 +325,8 @@ public class HomeActivity extends BaseActivity {
                         JSONArray jsonArray2 = Group.getJSONArray(SUBCATEGORY_NAME);
 
                         for (int j = 0; j < jsonArray2.length(); j++) {
-                            JSONObject Child = jsonArray2.getJSONObject(j);
-                            //Log.i("tagconvertstr", "*" + Child + "*");
-                            String ChildName = Child.getString(SUBITEM_NAME);
-                            Log.i("tagconvertstr", "*" + ChildName + "*");
-                            list.add(ChildName);
+
+                            list.add((String) jsonArray2.get(j));
                         }
 
                         listDataChild.put(GroupName, list);
@@ -280,7 +370,7 @@ public class HomeActivity extends BaseActivity {
                 fragmentTransaction = getSupportFragmentManager().beginTransaction();
                 ProductListFragment productListFragment = new ProductListFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString(FRAGMENT_ARG,listDataChild.get(listDataHeader.get(groupPosition)).get(
+                bundle.putString(FRAGMENT_ARG, listDataChild.get(listDataHeader.get(groupPosition)).get(
                         childPosition));
                 productListFragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.fragment_placeholder, productListFragment);
@@ -298,12 +388,42 @@ public class HomeActivity extends BaseActivity {
 
         otherslistView = (ListView) findViewById(R.id.other_list);
         othersListText = getResources().getStringArray(R.array.others_list_textitems);
-        othersIcons = getResources().obtainTypedArray(R.array.others_icon_array_items);
-
-        othersListAdapter = new CustomListViewDrawerAdapter(this, othersListText, othersIcons);
+        // othersIcons = getResources().obtainTypedArray(R.array.others_icon_array_items);
+        //othersListAdapter = new CustomListViewDrawerAdapter(this, othersListText, othersIcons);
+        ArrayAdapter<String> othersListAdapter = new ArrayAdapter<>(HomeActivity.this, R.layout.custom_textview, othersListText);
         otherslistView.setAdapter(othersListAdapter);
         customListScroll.setListViewHeightBasedOnChildren(otherslistView);
-    }
+        otherslistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+
+                    case 0:
+                        intent = new Intent(HomeActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case 1:
+                        intent = new Intent(HomeActivity.this, FavouritesActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case 2:
+                        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store"));
+                        startActivity(intent);
+                        break;
+
+                    case 3:
+                        intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
+                        intent.setData(Uri.parse("test@gmail.com"));
+                        intent.putExtra(Intent.EXTRA_SUBJECT, "Contact us");
+                        startActivity(intent);
+                        break;
+                }
+            }
+        });
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -312,9 +432,15 @@ public class HomeActivity extends BaseActivity {
         } else {
             super.onBackPressed();
         }
+
     }
 
 
+    @Override
+    public void onClick(View v) {
+        Intent CartIntent = new Intent(HomeActivity.this, AddToCartActivity.class);
+        startActivity(CartIntent);
+    }
 }
 
 

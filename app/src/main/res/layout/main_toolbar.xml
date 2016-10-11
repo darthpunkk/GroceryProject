@@ -8,7 +8,6 @@
         android:id="@+id/app_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:elevation="9dp"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <LinearLayout
